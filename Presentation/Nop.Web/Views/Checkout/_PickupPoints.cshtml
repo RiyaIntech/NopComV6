@@ -1,6 +1,13 @@
-﻿@model CheckoutPickupPointsModel
+﻿@using System.Text
+@using Nop.Core;
+@model CheckoutPickupPointsModel
+@inject IWebHelper webHelper
 
-@using System.Text
+@{
+    var PickupStoreId = 0;
+
+    var storeLocation = webHelper.GetStoreLocation();
+}
 
 @if (!Model.PickupInStoreOnly && Model.PickupPoints.Any())
 {
@@ -14,19 +21,43 @@
         </div>
         <script asp-location="Footer">
             $(document).ready(function () {
+                $('#pickup-points-form').hide();
                 togglePickupInStore($("#@Html.IdFor(model => model.PickupInStore)"));
             });
-
             function togglePickupInStore(pickupInStore) {
                 if (pickupInStore.checked) {
                     $('#pickup-points-form').show();
-                } else {
+                    PickupStoreId = $('#pickup-points-select').val();
+                    alert(PickupStoreId);
+                    if (PickupStoreId != undefined) {
+                        getPickUpTimeSlots($("#pickup-points-select").val());
+                    }
+                 
+                } 
+                else {
                     $('#pickup-points-form').hide();
                 }
 
                 $(document).trigger({ type: "checkout_toggle_pickup_in_store", checked: pickupInStore.checked });
             }
-        </script>
+            function getPickUpTimeSlots(selectedPickupStoreId) {
+                PickupStoreId = selectedPickupStoreId.split('___')[0];
+                alert("PickupStoreId = " + PickupStoreId);
+                LoadPickupTimeSlot(PickupStoreId);
+            }
+            function LoadPickupTimeSlot(PickupStoreId) {
+                $.ajax({
+                    cache: false,
+                    url: '@(storeLocation)Admin/PickupInStore/getPickupTimeSlotHtml?storePickupPointId=' + PickupStoreId,
+                    success: function (data, textStatus, jqXHR) {
+                        if (data.success) {
+                            $("#select-pickup-timeslot").html(data.timeslothtml)
+                        }                      
+                    }
+                });
+            }
+            
+        </script> 
     </div>
 }
 
@@ -55,7 +86,7 @@
             else
             {
                 <label for="pickup-points-select">@T("Checkout.PickupPoints.SelectPickupPoint")</label>
-                <select name="pickup-points-id" id="pickup-points-select" class="address-select" title="">
+                <select name="pickup-points-id" id="pickup-points-select" class="address-select" title="" onchange="getPickUpTimeSlots(this.value);">
                     @foreach (var point in Model.PickupPoints)
                     {
                         var addressLine = new StringBuilder();
@@ -94,7 +125,11 @@
                 </select>
             }
         </div>
+        <div id="select-pickup-timeslot">
+        </div>
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutPickUpPointsAfter, additionalData = Model })
+
+
         if (Model.DisplayPickupPointsOnMap)
         {
             var src = $"https://maps.googleapis.com/maps/api/js{(string.IsNullOrEmpty(Model.GoogleMapsApiKey) ? string.Empty : $"?key={Model.GoogleMapsApiKey}")}";
@@ -103,7 +138,7 @@
                     var markers = new Map();
                     var googleMap = null;
                     $(document).ready(function () {
-                        $.getScript("@src", function( data, textStatus, jqxhr ) {
+                        $.getScript("@src", function (data, textStatus, jqxhr) {
                             google.maps.visualRefresh = true;
                             googleMap = new google.maps.Map(document.getElementById("map"), {
                                 zoom: 15,
@@ -111,17 +146,17 @@
                             });
                             var geocoder = new google.maps.Geocoder();
                             var infowindow = new google.maps.InfoWindow();
-                            @for (var i = 0; i < Model.PickupPoints.Count; i++)
-                            {
-                                var point = Model.PickupPoints[i];
-                                var value = $"{point.Id}___{point.ProviderSystemName}";
-                                var pickupPointInfo = Html.Raw($@"<div class='pickup-point-info'><ul><li><strong>{point.Name}</strong></li><li>{point.OpeningHours}</li><li>{point.PickupFee}</li></ul></div>");
-                                if (point.Latitude != null && point.Longitude != null)
-                                {
-                                    var latitude = point.Latitude.Value.ToString(CultureInfo.InvariantCulture);
-                                    var longitude = point.Longitude.Value.ToString(CultureInfo.InvariantCulture);
-                                    <text>
-                                        (function() {
+                    @for (var i = 0; i < Model.PickupPoints.Count; i++)
+                    {
+                        var point = Model.PickupPoints[i];
+                        var value = $"{point.Id}___{point.ProviderSystemName}";
+                        var pickupPointInfo = Html.Raw($@"<div class='pickup-point-info'><ul><li><strong>{point.Name}</strong></li><li>{point.OpeningHours}</li><li>{point.PickupFee}</li></ul></div>");
+                        if (point.Latitude != null && point.Longitude != null)
+                        {
+                            var latitude = point.Latitude.Value.ToString(CultureInfo.InvariantCulture);
+                            var longitude = point.Longitude.Value.ToString(CultureInfo.InvariantCulture);
+                            <text>
+                                        (function () {
                                             var marker = new google.maps.Marker({
                                                 map: googleMap,
                                                 title: "@point.Name",
@@ -135,18 +170,19 @@
                                                 infowindow.setContent("@pickupPointInfo");
                                                 infowindow.open(googleMap, marker);
                                             });
-                                            @if (i == 0) {
-                                                <text>googleMap.setCenter(marker.getPosition());</text>
-                                            }
-                                        }());
-                                    </text>
-                                }
-                                else
+                                @if (i == 0)
                                 {
-                                    var address = $"{point.Address} {point.City} {point.ZipPostalCode} {point.CountryName}";
-                                    <text>
-                                        var interval_@i = setInterval( function () {
-                                            geocoder.geocode({ 'address': "@address" }, function(results, status) {
+                                    <text>googleMap.setCenter(marker.getPosition()); </text>
+                                }
+                                                                                                                                                                                                                }());
+                            </text>
+                        }
+                        else
+                        {
+                            var address = $"{point.Address} {point.City} {point.ZipPostalCode} {point.CountryName}";
+                            <text>
+                                                                                                                                                                                                                var interval_@i = setInterval(function () {
+                                            geocoder.geocode({ 'address': "@address" }, function (results, status) {
                                                 if (status === google.maps.GeocoderStatus.OK) {
                                                     var marker = new google.maps.Marker({
                                                         map: googleMap,
@@ -161,22 +197,23 @@
                                                         infowindow.setContent("@pickupPointInfo");
                                                         infowindow.open(googleMap, marker);
                                                     });
-                                                    @if (i == 0) {
-                                                        <text>googleMap.setCenter(marker.getPosition());</text>
-                                                    }
-                                                    clearInterval(interval_@i);
+                                @if (i == 0)
+                                {
+                                    <text>googleMap.setCenter(marker.getPosition()); </text>
+                                }
+                                                        clearInterval(interval_@i);
                                                 }
                                             })
                                         }, 250);
-                                    </text>
-                                }
-                            }
+                            </text>
+                        }
+                    }
 
-                            $('#pickup-points-select').on('change', function() {
-                                new google.maps.event.trigger(markers.get(this.value), 'click');
-                            });
+                                $('#pickup-points-select').on('change', function () {
+                                    new google.maps.event.trigger(markers.get(this.value), 'click');
+                                });
 
-                            $("#@Html.IdFor(model => model.PickupInStore)").on('change', function() {
+                            $("#@Html.IdFor(model => model.PickupInStore)").on('change', function () {
                                 if ($('#@Html.IdFor(model => model.PickupInStore)').is(':checked')) {
                                     var center = googleMap.getCenter();
                                     google.maps.event.trigger(googleMap, 'resize');
@@ -198,3 +235,4 @@
         </ul>
     </div>
 </div>
+

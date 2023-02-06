@@ -1096,6 +1096,8 @@ namespace Nop.Web.Areas.Admin.Factories
                 model.ConsiderAssociatedProductsDimensions_OverrideForStore = await _settingService.SettingExistsAsync(shippingSettings, x => x.ConsiderAssociatedProductsDimensions, storeId);
                 model.ShippingOriginAddress_OverrideForStore = await _settingService.SettingExistsAsync(shippingSettings, x => x.ShippingOriginAddressId, storeId);
                 model.ShippingSorting_OverrideForStore = await _settingService.SettingExistsAsync(shippingSettings, x => x.ShippingSorting, storeId);
+                model.AllowTimeSlotsInPickupInStore_OverrideForStore = await _settingService.SettingExistsAsync(shippingSettings, x => x.AllowTimeSlotsInPickupInStore, storeId);
+                model.OrderLimitPerTimeSlot_OverrideForStore = await _settingService.SettingExistsAsync(shippingSettings, x => x.OrderLimitPerTimeSlot, storeId);
             }
 
             //prepare shipping origin address

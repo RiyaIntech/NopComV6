@@ -1562,7 +1562,9 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.ShippingOriginAddress, options => options.Ignore())
                 .ForMember(model => model.ShippingOriginAddress_OverrideForStore, options => options.Ignore())
                 .ForMember(model => model.ShipToSameAddress_OverrideForStore, options => options.Ignore())
-                .ForMember(model => model.UseWarehouseLocation_OverrideForStore, options => options.Ignore());
+                .ForMember(model => model.UseWarehouseLocation_OverrideForStore, options => options.Ignore())
+                 .ForMember(model => model.AllowTimeSlotsInPickupInStore_OverrideForStore, options => options.Ignore())
+                 .ForMember(model => model.OrderLimitPerTimeSlot_OverrideForStore, options => options.Ignore());
             CreateMap<ShippingSettingsModel, ShippingSettings>()
                 .ForMember(settings => settings.ActivePickupPointProviderSystemNames, options => options.Ignore())
                 .ForMember(settings => settings.ActiveShippingRateComputationMethodSystemNames, options => options.Ignore())

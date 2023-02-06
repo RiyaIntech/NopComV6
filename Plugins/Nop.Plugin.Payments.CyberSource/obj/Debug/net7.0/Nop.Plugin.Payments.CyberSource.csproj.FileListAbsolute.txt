@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.CyberSource\obj\Debug\net7.0\Nop.Plugin.Payments.CyberSource.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.CyberSource\obj\Debug\net7.0\Nop.Plugin.Payments.CyberSource.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.CyberSource\obj\Debug\net7.0\Nop.Plugin.Payments.CyberSource.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.CyberSource\obj\Debug\net7.0\Nop.Plugin.Payments.CyberSource.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.CyberSource\obj\Debug\net7.0\Nop.Plugin.Payments.CyberSource.csproj.CoreCompileInputs.cache

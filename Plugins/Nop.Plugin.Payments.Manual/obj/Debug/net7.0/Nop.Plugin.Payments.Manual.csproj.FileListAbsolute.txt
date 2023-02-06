@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.Manual\obj\Debug\net7.0\Nop.Plugin.Payments.Manual.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.Manual\obj\Debug\net7.0\Nop.Plugin.Payments.Manual.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.Manual\obj\Debug\net7.0\Nop.Plugin.Payments.Manual.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.Manual\obj\Debug\net7.0\Nop.Plugin.Payments.Manual.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Payments.Manual\obj\Debug\net7.0\Nop.Plugin.Payments.Manual.csproj.CoreCompileInputs.cache

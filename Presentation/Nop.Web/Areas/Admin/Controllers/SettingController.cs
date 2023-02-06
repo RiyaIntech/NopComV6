@@ -514,7 +514,8 @@ namespace Nop.Web.Areas.Admin.Controllers
                 await _settingService.SaveSettingOverridablePerStoreAsync(shippingSettings, x => x.BypassShippingMethodSelectionIfOnlyOne, model.BypassShippingMethodSelectionIfOnlyOne_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(shippingSettings, x => x.ConsiderAssociatedProductsDimensions, model.ConsiderAssociatedProductsDimensions_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(shippingSettings, x => x.ShippingSorting, model.ShippingSorting_OverrideForStore, storeScope, false);
-
+                await _settingService.SaveSettingOverridablePerStoreAsync(shippingSettings, x => x.AllowTimeSlotsInPickupInStore, model.AllowTimeSlotsInPickupInStore_OverrideForStore, storeScope, false);
+                await _settingService.SaveSettingOverridablePerStoreAsync(shippingSettings, x => x.OrderLimitPerTimeSlot, model.OrderLimitPerTimeSlot_OverrideForStore, storeScope, false);
                 if (model.ShippingOriginAddress_OverrideForStore || storeScope == 0)
                 {
                     //update address

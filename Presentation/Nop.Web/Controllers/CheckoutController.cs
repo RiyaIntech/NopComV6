@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Nop.Core;
@@ -30,6 +26,10 @@ using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Models.Checkout;
 using Nop.Web.Models.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nop.Web.Controllers
 {
@@ -41,7 +41,7 @@ namespace Nop.Web.Controllers
         private readonly AddressSettings _addressSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly CustomerSettings _customerSettings;
-        private readonly IAddressAttributeParser _addressAttributeParser;        
+        private readonly IAddressAttributeParser _addressAttributeParser;
         private readonly IAddressModelFactory _addressModelFactory;
         private readonly IAddressService _addressService;
         private readonly ICheckoutModelFactory _checkoutModelFactory;
@@ -179,7 +179,6 @@ namespace Nop.Web.Controllers
         protected virtual async Task<PickupPoint> ParsePickupOptionAsync(IList<ShoppingCartItem> cart, IFormCollection form)
         {
             var pickupPoint = form["pickup-points-id"].ToString().Split(new[] { "___" }, StringSplitOptions.None);
-
             var customer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
             var address = customer.BillingAddressId.HasValue
@@ -191,7 +190,10 @@ namespace Nop.Web.Controllers
 
             if (selectedPoint == null)
                 throw new Exception("Pickup point is not allowed");
-
+            if (_shippingSettings.AllowTimeSlotsInPickupInStore)
+            {
+                selectedPoint.PickupTimeSlotId = Convert.ToInt32(form["pickup-points-timeslot-id"]);
+            }
             return selectedPoint;
         }
 
@@ -263,7 +265,7 @@ namespace Nop.Web.Controllers
                 var customAttributes = await _addressAttributeParser.ParseCustomAddressAttributesAsync(form);
                 var customAttributeWarnings = await _addressAttributeParser.GetAttributeWarningsAsync(customAttributes);
 
-                if (customAttributeWarnings.Any()) 
+                if (customAttributeWarnings.Any())
                     return Json(new { error = 1, message = customAttributeWarnings });
 
                 address = addressModel.ToEntity(address);
@@ -464,11 +466,11 @@ namespace Nop.Web.Controllers
                     customer.BillingAddressId = address.Id;
                     await _customerService.UpdateCustomerAsync(customer);
 
-                    if (!opc) 
+                    if (!opc)
                         return Json(new { redirect = Url.RouteUrl("CheckoutBillingAddress") });
 
                     var billingAddressModel = await _checkoutModelFactory.PrepareBillingAddressModelAsync(cart, address.CountryId);
-                    
+
                     return Json(new
                     {
                         selected_id = model.BillingNewAddress.Id,
@@ -497,7 +499,7 @@ namespace Nop.Web.Controllers
         {
             return await DeleteAddressAsync(addressId, async (cart) =>
             {
-                if (!opc) 
+                if (!opc)
                     return Json(new { redirect = Url.RouteUrl("CheckoutBillingAddress") });
 
                 var billingAddressModel = await _checkoutModelFactory.PrepareBillingAddressModelAsync(cart);
@@ -525,7 +527,7 @@ namespace Nop.Web.Controllers
                     return Json(new { redirect = Url.RouteUrl("CheckoutShippingAddress") });
 
                 var shippingAddressModel = await _checkoutModelFactory.PrepareShippingAddressModelAsync(cart);
-                
+
                 return Json(new
                 {
                     update_section = new UpdateSectionJsonModel
@@ -568,7 +570,7 @@ namespace Nop.Web.Controllers
                 });
             });
         }
-        
+
         #endregion
 
         #region Methods (multistep checkout)
@@ -1683,6 +1685,21 @@ namespace Nop.Web.Controllers
                     if (pickupInStore)
                     {
                         var pickupOption = await ParsePickupOptionAsync(cart, form);
+                        if (_shippingSettings.OrderLimitPerTimeSlot)//check order limit
+                        {
+                            ModelState.AddModelError("", "Maximum Order Placed on selected time slot! Please choose other option!");
+                        }
+                        if (!ModelState.IsValid)
+                        {
+                            return Json(new
+                            {
+                                update_section = new UpdateSectionJsonModel
+                                {
+                                    name = "shipping",
+                                    html = await RenderPartialViewToStringAsync("OpcShippingAddress", pickupOption)
+                                }
+                            });
+                        }
                         await SavePickupOptionAsync(pickupOption);
 
                         return await OpcLoadStepAfterShippingMethod(cart);
@@ -2004,11 +2021,11 @@ namespace Nop.Web.Controllers
             {
                 var customer = await _workContext.GetCurrentCustomerAsync();
 
-                var isCaptchaSettingEnabled = await _customerService.IsGuestAsync(customer) && 
+                var isCaptchaSettingEnabled = await _customerService.IsGuestAsync(customer) &&
                     _captchaSettings.Enabled && _captchaSettings.ShowOnCheckoutPageForGuests;
 
                 var confirmOrderModel = new CheckoutConfirmModel()
-                { 
+                {
                     DisplayCaptcha = isCaptchaSettingEnabled
                 };
 
@@ -2168,6 +2185,10 @@ namespace Nop.Web.Controllers
             }
         }
 
+        public bool allowTimeSlotInPickup()
+        {
+            return _shippingSettings.AllowTimeSlotsInPickupInStore;
+        }
         #endregion
     }
 }

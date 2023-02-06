@@ -1,11 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Nop.Core;
 using Nop.Plugin.Pickup.PickupInStore.Models;
 using Nop.Plugin.Pickup.PickupInStore.Services;
 using Nop.Services.Localization;
+using Nop.Services.Shipping.Pickup;
 using Nop.Services.Stores;
 using Nop.Web.Framework.Models.Extensions;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nop.Plugin.Pickup.PickupInStore.Factories
 {
@@ -19,17 +21,21 @@ namespace Nop.Plugin.Pickup.PickupInStore.Factories
         private readonly IStorePickupPointService _storePickupPointService;
         private readonly ILocalizationService _localizationService;
         private readonly IStoreService _storeService;
-
+        private readonly IPickupPluginManager _pickupPluginManager;
+        private readonly IWebHelper _webHelper;
         #endregion
 
         #region Ctor
 
         public StorePickupPointModelFactory(IStorePickupPointService storePickupPointService,
-            ILocalizationService localizationService, IStoreService storeService)
+            ILocalizationService localizationService, IStoreService storeService, IPickupPluginManager pickupPluginManager,
+            IWebHelper webHelper)
         {
             _storePickupPointService = storePickupPointService;
             _localizationService = localizationService;
             _storeService = storeService;
+            _pickupPluginManager = pickupPluginManager;
+            _webHelper = webHelper;
         }
 
         #endregion
@@ -48,6 +54,9 @@ namespace Nop.Plugin.Pickup.PickupInStore.Factories
         {
             var pickupPoints = await _storePickupPointService.GetAllStorePickupPointsAsync(pageIndex: searchModel.Page - 1,
                 pageSize: searchModel.PageSize);
+            //get pickup point providers
+            var pickupPointProviders = (await _pickupPluginManager.LoadAllPluginsAsync()).ToPagedList(searchModel);
+
             var model = await new StorePickupPointListModel().PrepareToGridAsync(searchModel, pickupPoints, () =>
             {
                 return pickupPoints.SelectAwait(async point =>
@@ -61,6 +70,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Factories
                         OpeningHours = point.OpeningHours,
                         PickupFee = point.PickupFee,
                         DisplayOrder = point.DisplayOrder,
+                        ConfigurationTimeSlotUrl = $"{_webHelper.GetStoreLocation()}Admin/PickupInStore/ConfigureTimeSlot",
 
                         StoreName = store?.Name
                             ?? (point.StoreId == 0 ? (await _localizationService.GetResourceAsync("Admin.Configuration.Settings.StoreScope.AllStores")) : string.Empty)
@@ -89,6 +99,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Factories
 
             return Task.FromResult(searchModel);
         }
+
 
         #endregion
     }

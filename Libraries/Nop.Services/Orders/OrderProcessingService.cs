@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
@@ -32,6 +27,11 @@ using Nop.Services.Shipping;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Services.Vendors;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nop.Services.Orders
 {
@@ -375,6 +375,9 @@ namespace Nop.Services.Orders
             /// Order total
             /// </summary>
             public decimal OrderTotal { get; set; }
+            //Pickup In Store 
+            public int StorePickupPointId { get; set; }
+            public int StorePickupTimeSlotId { get; set; }
         }
 
         #endregion
@@ -621,6 +624,8 @@ namespace Nop.Services.Orders
                         ZipPostalCode = pickupPoint.ZipPostalCode,
                         CreatedOnUtc = DateTime.UtcNow
                     };
+                    details.StorePickupPointId = Convert.ToInt32(pickupPoint.Id);
+                    details.StorePickupTimeSlotId = pickupPoint.PickupTimeSlotId ?? 0;
                 }
                 else
                 {
@@ -949,7 +954,10 @@ namespace Nop.Services.Orders
                 CustomValuesXml = _paymentService.SerializeCustomValues(processPaymentRequest),
                 VatNumber = details.VatNumber,
                 CreatedOnUtc = DateTime.UtcNow,
-                CustomOrderNumber = string.Empty
+                CustomOrderNumber = string.Empty,
+                //Pickup In Store
+                StorePickupPointId = details.StorePickupPointId,
+                StorePickupTimeSlotId = details.StorePickupTimeSlotId
             };
 
             if (details.BillingAddress is null)

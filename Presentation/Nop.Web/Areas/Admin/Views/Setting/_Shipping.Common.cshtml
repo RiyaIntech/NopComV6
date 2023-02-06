@@ -54,6 +54,28 @@
             </div>
             <div class="form-group row advanced-setting">
                 <div class="col-md-3">
+                    <nop-override-store-checkbox asp-for="AllowTimeSlotsInPickupInStore_OverrideForStore" asp-input="AllowTimeSlotsInPickupInStore" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                    <nop-label asp-for="AllowTimeSlotsInPickupInStore" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="AllowTimeSlotsInPickupInStore" />
+                    <span asp-validation-for="AllowTimeSlotsInPickupInStore"></span>
+                </div>
+            </div>
+        <nop-nested-setting asp-for="AllowTimeSlotsInPickupInStore">
+            <div class="form-group row advanced-setting">
+                <div class="col-md-3">
+                    <nop-override-store-checkbox asp-for="OrderLimitPerTimeSlot_OverrideForStore" asp-input="OrderLimitPerTimeSlot" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                    <nop-label asp-for="OrderLimitPerTimeSlot" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="OrderLimitPerTimeSlot" />
+                    <span asp-validation-for="OrderLimitPerTimeSlot"></span>
+                </div>
+            </div>
+        </nop-nested-setting>
+            <div class="form-group row advanced-setting">
+                <div class="col-md-3">
                     <nop-override-store-checkbox asp-for="DisplayPickupPointsOnMap_OverrideForStore" asp-input="DisplayPickupPointsOnMap" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
                     <nop-label asp-for="DisplayPickupPointsOnMap" />
                 </div>

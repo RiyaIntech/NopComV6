@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Directory;
+using Nop.Plugin.Pickup.PickupInStore.Components;
 using Nop.Plugin.Pickup.PickupInStore.Domain;
 using Nop.Plugin.Pickup.PickupInStore.Factories;
 using Nop.Plugin.Pickup.PickupInStore.Models;
@@ -19,6 +16,10 @@ using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nop.Plugin.Pickup.PickupInStore.Controllers
 {
@@ -36,6 +37,8 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IStorePickupPointModelFactory _storePickupPointModelFactory;
         private readonly IStorePickupPointService _storePickupPointService;
+        private readonly IStorePickupTimeSlotModelFactory _storePickupTimeSlotModelFactory;
+        private readonly IStorePickupTimeSlotService _storePickupTimeSlotService;
         private readonly IStoreService _storeService;
         private readonly AddressSettings _addressSettings;
 
@@ -51,7 +54,9 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
             IStorePickupPointModelFactory storePickupPointModelFactory,
             IStorePickupPointService storePickupPointService,
             IStoreService storeService,
-            AddressSettings customerSettings)
+            AddressSettings customerSettings,
+            IStorePickupTimeSlotModelFactory storePickupTimeSlotModelFactory,
+            IStorePickupTimeSlotService storePickupTimeSlotService)
         {
             _addressService = addressService;
             _countryService = countryService;
@@ -62,6 +67,8 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
             _storePickupPointService = storePickupPointService;
             _storeService = storeService;
             _addressSettings = customerSettings;
+            _storePickupTimeSlotModelFactory = storePickupTimeSlotModelFactory;
+            _storePickupTimeSlotService = storePickupTimeSlotService;
         }
 
         #endregion
@@ -217,6 +224,8 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
             foreach (var store in await _storeService.GetAllStoresAsync())
                 model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString(), Selected = store.Id == model.StoreId });
 
+            model.StorePickupPointSearchModel = await _storePickupPointModelFactory.PrepareStorePickupPointSearchModelAsync(new StorePickupPointSearchModel());
+
             return View("~/Plugins/Pickup.PickupInStore/Views/Edit.cshtml", model);
         }
 
@@ -280,7 +289,96 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
 
             return new NullJsonResult();
         }
-
         #endregion
+
+        #region Pickup In Store Time Slots
+        public virtual async Task<IActionResult> ConfigureTimeSlot(int StorePickupPointId)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageCategories))
+                return AccessDeniedView();
+
+            //prepare model
+            var model = await _storePickupTimeSlotModelFactory.PrepareStorePickuptTimeSlotModelAsync(new StorePickupTimeSlotSearchModel());
+            model.StorePickupPointId = StorePickupPointId;
+            return View("~/Plugins/Pickup.PickupInStore/Views/_ConfigureTimeSlot.cshtml", model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PickUpTimeSlotList(int StorePickupPointId, StorePickupTimeSlotSearchModel pickupTimeSlotSearchModel)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageShippingSettings))
+                return await AccessDeniedDataTablesJson();
+
+            var model = await _storePickupTimeSlotModelFactory.PrepareStorePickupTimeSlotListModelAsync(StorePickupPointId, pickupTimeSlotSearchModel);
+            return Json(model);
+        }
+
+
+        public async Task<IActionResult> CreateTimeSlot(int StorePickupPointId)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageShippingSettings))
+                return AccessDeniedView();
+
+            var model = new StorePickupTimeSlotModel();
+            model.StorePickupPointId = StorePickupPointId;
+            // model.StorePickupTimeSlotSearchModel = await _storePickupTimeSlotModelFactory.PrepareStorePickuptTimeSlotModelAsync(new StorePickupTimeSlotSearchModel());
+            return View("~/Plugins/Pickup.PickupInStore/Views/CreateTimeSlot.cshtml", model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateTimeSlot(StorePickupTimeSlotModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageShippingSettings))
+                return AccessDeniedView();
+
+
+            var pickupTimeSlot = new StorePickupTimeSlot
+            {
+                StorePickupPointId = model.StorePickupPointId,
+                TimeSlot = model.TimeSlot,
+                LimitOrderPerTimeSlot = model.LimitOrderPerTimeSlot,
+                Active = model.Active
+            };
+            await _storePickupTimeSlotService.InsertStorePickupTimeSlotAsync(pickupTimeSlot);
+            ViewBag.RefreshPage = true;
+            return View("~/Plugins/Pickup.PickupInStore/Views/CreateTimeSlot.cshtml", model);
+        }
+        [HttpPost]
+        public virtual async Task<IActionResult> UpdateTimeSlot(StorePickupTimeSlotModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageShippingSettings))
+                return AccessDeniedView();
+
+            var pickupTimeSlot = await _storePickupTimeSlotService.GetStorePickupTimeSlotAsync(model.Id);
+            pickupTimeSlot.LimitOrderPerTimeSlot = model.LimitOrderPerTimeSlot;
+            pickupTimeSlot.Active = model.Active;
+            await _storePickupTimeSlotService.UpdateStorePickupTimeSlotAsync(pickupTimeSlot);
+            ViewBag.RefreshPage = true;
+            return new NullJsonResult();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTimeSlot(int id)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageShippingSettings))
+                return AccessDeniedView();
+
+            var pickupTimeSlot = await _storePickupTimeSlotService.GetStorePickupTimeSlotAsync(id);
+            if (pickupTimeSlot == null)
+                return RedirectToAction("Configure");
+
+            await _storePickupTimeSlotService.DeleteStorePickupTimeSlotAsync(pickupTimeSlot);
+
+            return new NullJsonResult();
+        }
+        public async Task<IActionResult> getPickupTimeSlotHtml(int storePickupPointId)
+        {
+            var timeSlotHtml = await RenderViewComponentToStringAsync(typeof(PickupInStoreTimeSlotComponent), storePickupPointId = storePickupPointId);
+            return Json(new
+            {
+                success = true,
+                timeslothtml = timeSlotHtml
+            });
+        }
+        #endregion
+
     }
 }

@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.AccessiBe\obj\Debug\net7.0\Nop.Plugin.Widgets.AccessiBe.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.AccessiBe\obj\Debug\net7.0\Nop.Plugin.Widgets.AccessiBe.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.AccessiBe\obj\Debug\net7.0\Nop.Plugin.Widgets.AccessiBe.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.AccessiBe\obj\Debug\net7.0\Nop.Plugin.Widgets.AccessiBe.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.AccessiBe\obj\Debug\net7.0\Nop.Plugin.Widgets.AccessiBe.csproj.CoreCompileInputs.cache

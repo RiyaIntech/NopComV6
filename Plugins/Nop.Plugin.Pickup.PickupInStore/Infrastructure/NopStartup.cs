@@ -21,6 +21,8 @@ namespace Nop.Plugin.Pickup.PickupInStore.Infrastructure
         {
             services.AddScoped<IStorePickupPointService, StorePickupPointService>();
             services.AddScoped<IStorePickupPointModelFactory, StorePickupPointModelFactory>();
+            services.AddScoped<IStorePickupTimeSlotModelFactory, StorePickupTimeSlotModelFactory>();
+            services.AddScoped<IStorePickupTimeSlotService, StorePickupTimeSlotService>();
         }
 
         /// <summary>

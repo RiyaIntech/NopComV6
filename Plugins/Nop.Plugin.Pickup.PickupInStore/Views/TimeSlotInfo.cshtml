@@ -1,0 +1,31 @@
+﻿@model Nop.Plugin.Pickup.PickupInStore.Models.TimeSlotListModel
+@{
+    Layout = "";
+}
+<div class="select-pickup-point">
+@if (Model.Count == 1)
+{
+    var pointTimeSlot = Model.First();
+    <input name="pickup-points-timeslot-id" id="pickup-points-timeslot-id" type="hidden" value="@($"{pointTimeSlot.Id}")" />
+    <ul>
+        <li class="single-pickup-point name">@pointTimeSlot.TimeSlot</li>
+    </ul>
+}
+else
+{
+        <label for="pickup-points-timeslot-select">@T("Checkout.PickupPoints.SelectPickupTimeSlot")</label>
+    <select name="pickup-points-timeslot-id" id="pickup-points-timeslot-select" class="address-select" title="">
+        @foreach (var pointTimeSlot in Model)
+        {
+            <option value="@($"{pointTimeSlot.Id}")">@(pointTimeSlot.TimeSlot)</option>
+        }
+    </select>
+}
+</div>
+<script asp-location="Footer">
+    $(document).ready(function () {
+           $('#pickup-points-timeslot-select').change(function () {
+               @ViewData["PickupTimeSlotId"] = $('#pickup-points-timeslot-select').val();
+            });
+    });
+</script>

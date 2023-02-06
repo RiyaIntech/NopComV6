@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.FacebookPixel\obj\Debug\net7.0\Nop.Plugin.Widgets.FacebookPixel.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.FacebookPixel\obj\Debug\net7.0\Nop.Plugin.Widgets.FacebookPixel.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.FacebookPixel\obj\Debug\net7.0\Nop.Plugin.Widgets.FacebookPixel.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.FacebookPixel\obj\Debug\net7.0\Nop.Plugin.Widgets.FacebookPixel.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Widgets.FacebookPixel\obj\Debug\net7.0\Nop.Plugin.Widgets.FacebookPixel.csproj.CoreCompileInputs.cache

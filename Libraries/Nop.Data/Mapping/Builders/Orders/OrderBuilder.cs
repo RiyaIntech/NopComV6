@@ -1,9 +1,9 @@
-﻿using System.Data;
-using FluentMigrator.Builders.Create.Table;
+﻿using FluentMigrator.Builders.Create.Table;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Orders;
 using Nop.Data.Extensions;
+using System.Data;
 
 namespace Nop.Data.Mapping.Builders.Orders
 {

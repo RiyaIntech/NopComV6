@@ -44,6 +44,13 @@
                         Title = T("Plugins.Pickup.PickupInStore.Fields.Store").Text,
                         Width = "100"
                     },
+                new ColumnProperty(nameof(StorePickupPointModel.Id))
+                                {
+                Title = T("Plugins.Pickup.PickupInStore.Configure.TimeSlot").Text,
+                                    Width = "200",
+                                    ClassName =  NopColumnClassDefaults.Button,
+                                    Render = new RenderCustom("renderColumnConfigure")
+                                },
                     new ColumnProperty(nameof(StorePickupPointModel.Id))
                     {
                         Title = T("Admin.Common.Edit").Text,
@@ -60,11 +67,19 @@
                     }
                 }
            })
+           
             </div>
 
             <script>
                 function renderColumnEdit(data, type, row, meta) {
                     return '<button onclick=\"javascript:OpenWindow(\'@Url.Content("~/Admin/PickupInStore/Edit/")' + data + '?btnId=btnRefresh&formId=pickup-instore-form\', 800, 800, true); return false;\" class="btn btn-default"><i class="fas fa-pencil-alt"></i>@T("Admin.Common.Edit").Text</button>';
+                }
+                function renderColumnConfigure(data, type, row, meta) {
+                    if (row.ConfigurationTimeSlotUrl && row.ConfigurationTimeSlotUrl.length > 0) {
+                        return '<a class="btn btn-default" href="' + row.ConfigurationTimeSlotUrl + '?StorePickupPointId= '+ data +'"><i class="fas fa-cog"></i>@T("Plugins.Pickup.PickupInStore.Configure.TimeSlot").Text</a>';
+                    } else {
+                        return '';
+                    }
                 }
             </script>
 

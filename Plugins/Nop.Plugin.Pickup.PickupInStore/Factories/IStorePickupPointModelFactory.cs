@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Nop.Plugin.Pickup.PickupInStore.Models;
+﻿using Nop.Plugin.Pickup.PickupInStore.Models;
+using System.Threading.Tasks;
 
 namespace Nop.Plugin.Pickup.PickupInStore.Factories
 {
@@ -18,6 +18,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Factories
         /// </returns>
         Task<StorePickupPointListModel> PrepareStorePickupPointListModelAsync(StorePickupPointSearchModel searchModel);
 
+
         /// <summary>
         /// Prepare store pickup point search model
         /// </summary>
@@ -27,5 +28,6 @@ namespace Nop.Plugin.Pickup.PickupInStore.Factories
         /// The task result contains the store pickup point search model
         /// </returns>
         Task<StorePickupPointSearchModel> PrepareStorePickupPointSearchModelAsync(StorePickupPointSearchModel searchModel);
+
     }
 }

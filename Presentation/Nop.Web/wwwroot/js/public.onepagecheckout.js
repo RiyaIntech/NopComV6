@@ -790,3 +790,7 @@ var ConfirmOrder = {
         Checkout.setStepResponse(response);
     }
 };
+
+
+   
+

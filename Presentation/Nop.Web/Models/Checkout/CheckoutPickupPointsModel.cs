@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Nop.Web.Framework.Models;
+﻿using Nop.Web.Framework.Models;
+using System.Collections.Generic;
 
 namespace Nop.Web.Models.Checkout
 {
@@ -15,6 +15,7 @@ namespace Nop.Web.Models.Checkout
 
         public IList<CheckoutPickupPointModel> PickupPoints { get; set; }
         public bool AllowPickupInStore { get; set; }
+        public bool AllowTimeslotsInPickupinstore { get; set; }
         public bool PickupInStore { get; set; }
         public bool PickupInStoreOnly { get; set; }
         public bool DisplayPickupPointsOnMap { get; set; }

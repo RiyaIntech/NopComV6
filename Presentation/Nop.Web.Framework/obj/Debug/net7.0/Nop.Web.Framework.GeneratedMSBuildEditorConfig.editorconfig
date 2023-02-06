@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Nop.Web.Framework
-build_property.ProjectDir = D:\Projects\Nop4.6\src\Presentation\Nop.Web.Framework\
+build_property.ProjectDir = D:\LiveProjects\NopComV46\NopComV6\Presentation\Nop.Web.Framework\

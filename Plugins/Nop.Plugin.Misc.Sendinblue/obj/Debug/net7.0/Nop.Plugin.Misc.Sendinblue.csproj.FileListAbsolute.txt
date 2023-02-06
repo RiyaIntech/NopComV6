@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Sendinblue\obj\Debug\net7.0\Nop.Plugin.Misc.Sendinblue.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Sendinblue\obj\Debug\net7.0\Nop.Plugin.Misc.Sendinblue.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Sendinblue\obj\Debug\net7.0\Nop.Plugin.Misc.Sendinblue.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Sendinblue\obj\Debug\net7.0\Nop.Plugin.Misc.Sendinblue.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Sendinblue\obj\Debug\net7.0\Nop.Plugin.Misc.Sendinblue.csproj.CoreCompileInputs.cache

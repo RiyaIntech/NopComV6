@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Tests\Nop.Tests\obj\Debug\net7.0\Nop.Tests.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Tests\Nop.Tests\obj\Debug\net7.0\Nop.Tests.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Tests\Nop.Tests\obj\Debug\net7.0\Nop.Tests.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Tests\Nop.Tests\obj\Debug\net7.0\Nop.Tests.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Tests\Nop.Tests\obj\Debug\net7.0\Nop.Tests.csproj.CoreCompileInputs.cache

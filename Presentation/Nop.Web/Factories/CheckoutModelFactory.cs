@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Directory;
@@ -24,6 +20,10 @@ using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Web.Models.Checkout;
 using Nop.Web.Models.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nop.Web.Factories
 {
@@ -145,7 +145,8 @@ namespace Nop.Web.Factories
         {
             var model = new CheckoutPickupPointsModel
             {
-                AllowPickupInStore = _shippingSettings.AllowPickupInStore
+                AllowPickupInStore = _shippingSettings.AllowPickupInStore,
+                AllowTimeslotsInPickupinstore = _shippingSettings.AllowTimeSlotsInPickupInStore
             };
 
             if (!model.AllowPickupInStore)
@@ -224,7 +225,6 @@ namespace Nop.Web.Factories
                 model.PickupInStore = true;
                 return model;
             }
-
             return model;
         }
 

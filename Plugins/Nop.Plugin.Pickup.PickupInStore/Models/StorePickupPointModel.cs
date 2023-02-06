@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Nop.Web.Framework.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Web.Framework.Models;
+using Nop.Web.Framework.Mvc.ModelBinding;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nop.Plugin.Pickup.PickupInStore.Models
 {
@@ -49,6 +49,10 @@ namespace Nop.Plugin.Pickup.PickupInStore.Models
         [UIHint("Int32Nullable")]
         [NopResourceDisplayName("Plugins.Pickup.PickupInStore.Fields.TransitDays")]
         public int? TransitDays { get; set; }
+        public StorePickupPointSearchModel StorePickupPointSearchModel { get; set; }
+
+        [NopResourceDisplayName("Plugins.Pickup.PickupInStore.Configure.TimeSlot")]
+        public string ConfigurationTimeSlotUrl { get; set; }
     }
 
     public class AddressModel

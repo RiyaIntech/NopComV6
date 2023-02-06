@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Zettle\obj\Debug\net7.0\Nop.Plugin.Misc.Zettle.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Zettle\obj\Debug\net7.0\Nop.Plugin.Misc.Zettle.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Zettle\obj\Debug\net7.0\Nop.Plugin.Misc.Zettle.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Zettle\obj\Debug\net7.0\Nop.Plugin.Misc.Zettle.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Misc.Zettle\obj\Debug\net7.0\Nop.Plugin.Misc.Zettle.csproj.CoreCompileInputs.cache

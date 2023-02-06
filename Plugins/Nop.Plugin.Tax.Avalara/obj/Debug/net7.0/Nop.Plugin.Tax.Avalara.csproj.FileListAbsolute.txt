@@ -1,0 +1,5 @@
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Tax.Avalara\obj\Debug\net7.0\Nop.Plugin.Tax.Avalara.csproj.AssemblyReference.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Tax.Avalara\obj\Debug\net7.0\Nop.Plugin.Tax.Avalara.GeneratedMSBuildEditorConfig.editorconfig
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Tax.Avalara\obj\Debug\net7.0\Nop.Plugin.Tax.Avalara.AssemblyInfoInputs.cache
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Tax.Avalara\obj\Debug\net7.0\Nop.Plugin.Tax.Avalara.AssemblyInfo.cs
+D:\LiveProjects\NopComV46\NopComV6\Plugins\Nop.Plugin.Tax.Avalara\obj\Debug\net7.0\Nop.Plugin.Tax.Avalara.csproj.CoreCompileInputs.cache
