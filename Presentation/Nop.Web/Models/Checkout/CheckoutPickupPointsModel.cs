@@ -20,5 +20,6 @@ namespace Nop.Web.Models.Checkout
         public bool PickupInStoreOnly { get; set; }
         public bool DisplayPickupPointsOnMap { get; set; }
         public string GoogleMapsApiKey { get; set; }
+        public bool IsLimitTimeSlotExceeded { get; set; }
     }
 }

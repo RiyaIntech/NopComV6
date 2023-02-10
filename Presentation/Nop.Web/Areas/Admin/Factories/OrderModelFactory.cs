@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using MailKit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -43,6 +37,11 @@ using Nop.Web.Areas.Admin.Models.Orders;
 using Nop.Web.Areas.Admin.Models.Reports;
 using Nop.Web.Framework.Extensions;
 using Nop.Web.Framework.Models.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Nop.Web.Areas.Admin.Factories
 {
@@ -682,6 +681,15 @@ namespace Nop.Web.Areas.Admin.Factories
                 var pickupCountry = await _countryService.GetCountryByAddressAsync(pickupAddress);
 
                 model.PickupAddress = pickupAddress.ToModel(model.PickupAddress);
+                //Pickup In store Time Slot
+                if (order.StorePickupTimeSlotId.HasValue)
+                {
+                    var timeslotResult = _orderService.GetPickupTimeSlotDetail(order.StorePickupTimeSlotId.Value).Result;
+                    if (timeslotResult != null)
+                    {
+                        model.PickupTimeSlot = _orderService.GetPickupTimeSlotDetail(order.StorePickupTimeSlotId.Value).Result.TimeSlot;
+                    }
+                }
                 model.PickupAddressGoogleMapsUrl = $"https://maps.google.com/maps?f=q&hl=en&ie=UTF8&oe=UTF8&geocode=&q=" +
                     $"{WebUtility.UrlEncode($"{pickupAddress.Address1} {pickupAddress.ZipPostalCode} {pickupAddress.City} {(pickupCountry?.Name ?? string.Empty)}")}";
             }
@@ -729,7 +737,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     var customer = await _customerService.GetCustomerByIdAsync(order.CustomerId);
                     var store = await _storeService.GetStoreByIdAsync(order.StoreId);
-                    
+
                     //values
                     var attributeValues = await _productAttributeService.GetProductAttributeValuesAsync(attribute.Id);
                     foreach (var attributeValue in attributeValues)
@@ -955,7 +963,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     var ids = searchModel.OrderStatusIds.Select(id => id.ToString());
                     var statusItems = searchModel.AvailableOrderStatuses.Where(statusItem => ids.Contains(statusItem.Value)).ToList();
-                    foreach(var statusItem in statusItems)
+                    foreach (var statusItem in statusItems)
                     {
                         statusItem.Selected = true;
                     }
@@ -971,7 +979,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     var ids = searchModel.PaymentStatusIds.Select(id => id.ToString());
                     var statusItems = searchModel.AvailablePaymentStatuses.Where(statusItem => ids.Contains(statusItem.Value)).ToList();
-                    foreach(var statusItem in statusItems)
+                    foreach (var statusItem in statusItems)
                     {
                         statusItem.Selected = true;
                     }
@@ -987,7 +995,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     var ids = searchModel.ShippingStatusIds.Select(id => id.ToString());
                     var statusItems = searchModel.AvailableShippingStatuses.Where(statusItem => ids.Contains(statusItem.Value)).ToList();
-                    foreach(var statusItem in statusItems)
+                    foreach (var statusItem in statusItems)
                     {
                         statusItem.Selected = true;
                     }

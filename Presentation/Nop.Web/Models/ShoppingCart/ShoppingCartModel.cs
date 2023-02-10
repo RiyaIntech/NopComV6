@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Catalog;
 using Nop.Web.Framework.Models;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Media;
+using System;
+using System.Collections.Generic;
 
 namespace Nop.Web.Models.ShoppingCart
 {
@@ -28,7 +28,7 @@ namespace Nop.Web.Models.ShoppingCart
         public bool ShowProductImages { get; set; }
         public bool IsEditable { get; set; }
         public IList<ShoppingCartItemModel> Items { get; set; }
-        
+
         public IList<CheckoutAttributeModel> CheckoutAttributes { get; set; }
 
         public IList<string> Warnings { get; set; }
@@ -61,7 +61,7 @@ namespace Nop.Web.Models.ShoppingCart
 
             public string VendorName { get; set; }
 
-            public PictureModel Picture {get;set;}
+            public PictureModel Picture { get; set; }
 
             public int ProductId { get; set; }
 
@@ -81,7 +81,7 @@ namespace Nop.Web.Models.ShoppingCart
 
             public int Quantity { get; set; }
             public List<SelectListItem> AllowedQuantities { get; set; }
-            
+
             public string AttributeInfo { get; set; }
 
             public string RecurringInfo { get; set; }
@@ -145,7 +145,7 @@ namespace Nop.Web.Models.ShoppingCart
             public bool IsPreSelected { get; set; }
         }
 
-        public partial record DiscountBoxModel: BaseNopModel
+        public partial record DiscountBoxModel : BaseNopModel
         {
             public DiscountBoxModel()
             {
@@ -178,7 +178,7 @@ namespace Nop.Web.Models.ShoppingCart
                 BillingAddress = new AddressModel();
                 ShippingAddress = new AddressModel();
                 PickupAddress = new AddressModel();
-                CustomValues= new Dictionary<string, object>();
+                CustomValues = new Dictionary<string, object>();
             }
             public bool Display { get; set; }
 
@@ -187,6 +187,7 @@ namespace Nop.Web.Models.ShoppingCart
             public bool IsShippable { get; set; }
             public AddressModel ShippingAddress { get; set; }
             public bool SelectedPickupInStore { get; set; }
+            public string PickupTime { get; set; }
             public AddressModel PickupAddress { get; set; }
             public string ShippingMethod { get; set; }
 

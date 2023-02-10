@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Nop.Core;
+﻿using Nop.Core;
+using Nop.Core.Domain;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Orders;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Nop.Services.Orders
 {
@@ -417,6 +418,11 @@ namespace Nop.Services.Orders
         /// </returns>
         Task<IList<RecurringPaymentHistory>> GetRecurringPaymentHistoryAsync(RecurringPayment recurringPayment);
 
+        #endregion
+
+        #region Get Total Pending Orders Based on Store Pickup TimeSlot
+        Task<List<Order>> GetTotalOrdersByPickupTimeSlot(int pickupTimeSlotId);
+        Task<StorePickupTimeSlot> GetPickupTimeSlotDetail(int pickupTimeSlotId);
         #endregion
     }
 }

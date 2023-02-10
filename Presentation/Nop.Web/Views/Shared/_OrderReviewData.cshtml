@@ -287,6 +287,21 @@
                             }
                         }
                     </ul>
+
+                    @if (!string.IsNullOrEmpty(Model.PickupTime))
+                    {
+                        <ul class="info-list">
+                            <li class="shipping-method">
+                                <span class="title">
+                                    @T("Admin.Orders.PickupTime")
+                                </span>
+                                <span class="value">
+                                    @Model.PickupTime
+                                </span>
+                            </li>
+                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryShippingMethodInfo, additionalData = Model })
+                        </ul>
+                    }
                 </div>
                 <div class="shipping-method-info">
                     <div class="title">

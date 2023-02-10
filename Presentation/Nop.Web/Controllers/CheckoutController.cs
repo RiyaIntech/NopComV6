@@ -192,7 +192,10 @@ namespace Nop.Web.Controllers
                 throw new Exception("Pickup point is not allowed");
             if (_shippingSettings.AllowTimeSlotsInPickupInStore)
             {
-                selectedPoint.PickupTimeSlotId = Convert.ToInt32(form["pickup-points-timeslot-id"]);
+                if (!string.IsNullOrEmpty(form["pickup-points-timeslot-id"].ToString()))
+                {
+                    selectedPoint.PickupTimeSlotId = Convert.ToInt32((form["pickup-points-timeslot-id"].ToString().Split(new[] { "__" }, StringSplitOptions.None))[0]);
+                }
             }
             return selectedPoint;
         }
@@ -399,12 +402,13 @@ namespace Nop.Web.Controllers
                 order = await _orderService.GetOrderByIdAsync(orderId.Value);
             }
             if (order == null)
-            {
-                var store = await _storeContext.GetCurrentStoreAsync();
-                order = (await _orderService.SearchOrdersAsync(storeId: store.Id,
-                customerId: customer.Id, pageSize: 1))
-                    .FirstOrDefault();
-            }
+                if (order == null)
+                {
+                    var store = await _storeContext.GetCurrentStoreAsync();
+                    order = (await _orderService.SearchOrdersAsync(storeId: store.Id,
+                    customerId: customer.Id, pageSize: 1))
+                        .FirstOrDefault();
+                }
             if (order == null || order.Deleted || customer.Id != order.CustomerId)
             {
                 return RedirectToRoute("Homepage");
@@ -1685,20 +1689,20 @@ namespace Nop.Web.Controllers
                     if (pickupInStore)
                     {
                         var pickupOption = await ParsePickupOptionAsync(cart, form);
-                        if (_shippingSettings.OrderLimitPerTimeSlot)//check order limit
+                        if (_shippingSettings.OrderLimitPerTimeSlot)//check order limit for selcted timeslot 
                         {
-                            ModelState.AddModelError("", "Maximum Order Placed on selected time slot! Please choose other option!");
-                        }
-                        if (!ModelState.IsValid)
-                        {
-                            return Json(new
+                            if (!string.IsNullOrEmpty(form["pickup-points-timeslot-id"].ToString()))
                             {
-                                update_section = new UpdateSectionJsonModel
+                                var TotalOrders = _orderService.GetTotalOrdersByPickupTimeSlot(Convert.ToInt32((form["pickup-points-timeslot-id"].ToString().Split(new[] { "__" }, StringSplitOptions.None))[0])).Result;
+                                if (TotalOrders.Count >= Convert.ToInt32((form["pickup-points-timeslot-id"].ToString().Split(new[] { "__" }, StringSplitOptions.None))[1]))
                                 {
-                                    name = "shipping",
-                                    html = await RenderPartialViewToStringAsync("OpcShippingAddress", pickupOption)
+                                    ModelState.AddModelError("", "Maximum Order Placed on selected time slot! Please choose another one!");
+                                    var shippingAddressModel = await _checkoutModelFactory.PrepareShippingAddressModelAsync(cart, prePopulateNewAddressWithCustomerFields: true);
+                                    //shippingAddressModel.PickupPointsModel.Warnings.Add("Maximum Order Placed on selected time slot! Please choose another one!");
+                                    shippingAddressModel.PickupPointsModel.IsLimitTimeSlotExceeded = true;
+                                    return PartialView("_PickupPoints", shippingAddressModel.PickupPointsModel);
                                 }
-                            });
+                            }
                         }
                         await SavePickupOptionAsync(pickupOption);
 
@@ -1809,7 +1813,7 @@ namespace Nop.Web.Controllers
                 if (!await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart))
                     throw new Exception("Shipping is not required");
 
-                //pickup point
+                //pickup point check enabled of not
                 if (_shippingSettings.AllowPickupInStore && _orderSettings.DisplayPickupInStoreOnShippingMethodPage)
                 {
                     var pickupInStore = ParsePickupInStore(form);
@@ -2185,10 +2189,6 @@ namespace Nop.Web.Controllers
             }
         }
 
-        public bool allowTimeSlotInPickup()
-        {
-            return _shippingSettings.AllowTimeSlotsInPickupInStore;
-        }
         #endregion
     }
 }

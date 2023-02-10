@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Caching;
+using Nop.Core.Domain;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
@@ -15,6 +11,12 @@ using Nop.Data;
 using Nop.Services.Catalog;
 using Nop.Services.Html;
 using Nop.Services.Shipping;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
 
 namespace Nop.Services.Orders
 {
@@ -37,7 +39,7 @@ namespace Nop.Services.Orders
         private readonly IRepository<RecurringPayment> _recurringPaymentRepository;
         private readonly IRepository<RecurringPaymentHistory> _recurringPaymentHistoryRepository;
         private readonly IShipmentService _shipmentService;
-
+        private readonly IRepository<StorePickupTimeSlot> _storepickupRepository;
         #endregion
 
         #region Ctor
@@ -53,7 +55,7 @@ namespace Nop.Services.Orders
             IRepository<ProductWarehouseInventory> productWarehouseInventoryRepository,
             IRepository<RecurringPayment> recurringPaymentRepository,
             IRepository<RecurringPaymentHistory> recurringPaymentHistoryRepository,
-            IShipmentService shipmentService)
+            IShipmentService shipmentService, IRepository<StorePickupTimeSlot> storepickupRepository)
         {
             _htmlFormatter = htmlFormatter;
             _productService = productService;
@@ -67,6 +69,7 @@ namespace Nop.Services.Orders
             _recurringPaymentRepository = recurringPaymentRepository;
             _recurringPaymentHistoryRepository = recurringPaymentHistoryRepository;
             _shipmentService = shipmentService;
+            _storepickupRepository = storepickupRepository;
         }
 
         #endregion
@@ -158,9 +161,9 @@ namespace Nop.Services.Orders
                 return null;
 
             return await (from o in _orderRepository.Table
-                    join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
-                    where oi.Id == orderItemId
-                    select o).FirstOrDefaultAsync();
+                          join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
+                          where oi.Id == orderItemId
+                          select o).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -171,7 +174,7 @@ namespace Nop.Services.Orders
         /// A task that represents the asynchronous operation
         /// The task result contains the order
         /// </returns>
-        public virtual async Task<IList<Order>> GetOrdersByIdsAsync(int[] orderIds) 
+        public virtual async Task<IList<Order>> GetOrdersByIdsAsync(int[] orderIds)
         {
             return await _orderRepository.GetByIdsAsync(orderIds, includeDeleted: false);
         }
@@ -272,10 +275,10 @@ namespace Nop.Services.Orders
             if (vendorId > 0)
             {
                 query = from o in query
-                    join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
-                    join p in _productRepository.Table on oi.ProductId equals p.Id
-                    where p.VendorId == vendorId
-                    select o;
+                        join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
+                        join p in _productRepository.Table on oi.ProductId equals p.Id
+                        where p.VendorId == vendorId
+                        select o;
 
                 query = query.Distinct();
             }
@@ -286,9 +289,9 @@ namespace Nop.Services.Orders
             if (productId > 0)
             {
                 query = from o in query
-                    join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
-                    where oi.ProductId == productId
-                    select o;
+                        join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
+                        where oi.ProductId == productId
+                        select o;
 
                 query = query.Distinct();
             }
@@ -298,10 +301,10 @@ namespace Nop.Services.Orders
                 var manageStockInventoryMethodId = (int)ManageInventoryMethod.ManageStock;
 
                 query = from o in query
-                    join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
-                    join p in _productRepository.Table on oi.ProductId equals p.Id
-                    join pwi in _productWarehouseInventoryRepository.Table on p.Id equals pwi.ProductId into ps
-                    from pwi in ps.DefaultIfEmpty()
+                        join oi in _orderItemRepository.Table on o.Id equals oi.OrderId
+                        join p in _productRepository.Table on oi.ProductId equals p.Id
+                        join pwi in _productWarehouseInventoryRepository.Table on p.Id equals pwi.ProductId into ps
+                        from pwi in ps.DefaultIfEmpty()
                         where
                         //"Use multiple warehouses" enabled
                         //we search in each warehouse
@@ -309,7 +312,7 @@ namespace Nop.Services.Orders
                         //"Use multiple warehouses" disabled
                         //we use standard "warehouse" property
                         ((p.ManageInventoryMethodId != manageStockInventoryMethodId || !p.UseMultipleWarehouses) && p.WarehouseId == warehouseId)
-                    select o;
+                        select o;
 
                 query = query.Distinct();
             }
@@ -339,13 +342,13 @@ namespace Nop.Services.Orders
                 query = query.Where(o => _orderNoteRepository.Table.Any(oNote => oNote.OrderId == o.Id && oNote.Note.Contains(orderNotes)));
 
             query = from o in query
-                join oba in _addressRepository.Table on o.BillingAddressId equals oba.Id
-                where
-                    (billingCountryId <= 0 || (oba.CountryId == billingCountryId)) &&
-                    (string.IsNullOrEmpty(billingPhone) || (!string.IsNullOrEmpty(oba.PhoneNumber) && oba.PhoneNumber.Contains(billingPhone))) &&
-                    (string.IsNullOrEmpty(billingEmail) || (!string.IsNullOrEmpty(oba.Email) && oba.Email.Contains(billingEmail))) &&
-                    (string.IsNullOrEmpty(billingLastName) || (!string.IsNullOrEmpty(oba.LastName) && oba.LastName.Contains(billingLastName)))
-                select o;
+                    join oba in _addressRepository.Table on o.BillingAddressId equals oba.Id
+                    where
+                        (billingCountryId <= 0 || (oba.CountryId == billingCountryId)) &&
+                        (string.IsNullOrEmpty(billingPhone) || (!string.IsNullOrEmpty(oba.PhoneNumber) && oba.PhoneNumber.Contains(billingPhone))) &&
+                        (string.IsNullOrEmpty(billingEmail) || (!string.IsNullOrEmpty(oba.Email) && oba.Email.Contains(billingEmail))) &&
+                        (string.IsNullOrEmpty(billingLastName) || (!string.IsNullOrEmpty(oba.LastName) && oba.LastName.Contains(billingLastName)))
+                    select o;
 
             query = query.Where(o => !o.Deleted);
             query = query.OrderByDescending(o => o.CreatedOnUtc);
@@ -528,9 +531,9 @@ namespace Nop.Services.Orders
                 return null;
 
             return await (from p in _productRepository.Table
-                    join oi in _orderItemRepository.Table on p.Id equals oi.ProductId
-                    where oi.Id == orderItemId
-                    select p).SingleOrDefaultAsync();
+                          join oi in _orderItemRepository.Table on p.Id equals oi.ProductId
+                          where oi.Id == orderItemId
+                          select p).SingleOrDefaultAsync();
         }
 
         /// <summary>
@@ -550,13 +553,13 @@ namespace Nop.Services.Orders
                 return new List<OrderItem>();
 
             return await (from oi in _orderItemRepository.Table
-                    join p in _productRepository.Table on oi.ProductId equals p.Id
-                    where
-                    oi.OrderId == orderId &&
-                    (!isShipEnabled.HasValue || (p.IsShipEnabled == isShipEnabled.Value)) &&
-                    (!isNotReturnable.HasValue || (p.NotReturnable == isNotReturnable)) &&
-                    (vendorId <= 0 || (p.VendorId == vendorId))
-                    select oi).ToListAsync();
+                          join p in _productRepository.Table on oi.ProductId equals p.Id
+                          where
+                          oi.OrderId == orderId &&
+                          (!isShipEnabled.HasValue || (p.IsShipEnabled == isShipEnabled.Value)) &&
+                          (!isNotReturnable.HasValue || (p.NotReturnable == isNotReturnable)) &&
+                          (vendorId <= 0 || (p.VendorId == vendorId))
+                          select oi).ToListAsync();
         }
 
         /// <summary>
@@ -949,7 +952,7 @@ namespace Nop.Services.Orders
                          select rp;
 
             var recurringPayments = await query2.ToPagedListAsync(pageIndex, pageSize);
-            
+
             return recurringPayments;
         }
 
@@ -985,6 +988,21 @@ namespace Nop.Services.Orders
             await _recurringPaymentHistoryRepository.InsertAsync(recurringPaymentHistory);
         }
 
+        #endregion
+
+        #region Get Total Pending Orders Based on Store Pickup TimeSlot
+
+        public virtual async Task<List<Order>> GetTotalOrdersByPickupTimeSlot(int pickupTimeSlotId)
+        {
+            return await _orderRepository.Table.Where(x => x.StorePickupTimeSlotId == pickupTimeSlotId && x.OrderStatusId != (int)OrderStatus.Complete && x.ShippingStatusId != (int)ShippingStatus.Delivered).ToListAsync();
+        }
+        #endregion
+
+        #region Get Pickup TimeSlot Details
+        public virtual async Task<StorePickupTimeSlot> GetPickupTimeSlotDetail(int pickupTimeSlotId)
+        {
+            return await _storepickupRepository.Table.Where(x => x.Id == pickupTimeSlotId).FirstOrDefaultAsync();
+        }
         #endregion
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿@inject Nop.Core.Domain.Common.AdminAreaSettings adminAreaSettings
 @using Nop.Plugin.Pickup.PickupInStore.Models
 @using Nop.Web.Framework.Models.DataTables
+@inject Nop.Core.Domain.Shipping.ShippingSettings _shippingSettings
 @model StorePickupPointSearchModel
 @{
     Layout = "_ConfigurePlugin";
@@ -49,7 +50,8 @@
                 Title = T("Plugins.Pickup.PickupInStore.Configure.TimeSlot").Text,
                                     Width = "200",
                                     ClassName =  NopColumnClassDefaults.Button,
-                                    Render = new RenderCustom("renderColumnConfigure")
+                                    Render = new RenderCustom("renderColumnConfigure"),
+                                    Visible = _shippingSettings.AllowTimeSlotsInPickupInStore
                                 },
                     new ColumnProperty(nameof(StorePickupPointModel.Id))
                     {

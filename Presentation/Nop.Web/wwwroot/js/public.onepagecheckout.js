@@ -450,6 +450,7 @@ var Shipping = {
     },
 
     save: function () {
+        debugger;
         if (Checkout.loadWaiting !== false) return;
 
         Checkout.setLoadWaiting('shipping');
@@ -470,6 +471,7 @@ var Shipping = {
     },
 
     nextStep: function (response) {
+        debugger;
         if (response.error) {
             if (typeof response.message === 'string') {
                 alert(response.message);

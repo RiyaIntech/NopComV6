@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core;
 using Nop.Core.Caching;
@@ -38,6 +33,11 @@ using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Media;
 using Nop.Web.Models.ShoppingCart;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nop.Web.Factories
 {
@@ -94,6 +94,7 @@ namespace Nop.Web.Factories
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly TaxSettings _taxSettings;
         private readonly VendorSettings _vendorSettings;
+        private readonly IOrderService _orderService;
 
         #endregion
 
@@ -144,7 +145,7 @@ namespace Nop.Web.Factories
             ShippingSettings shippingSettings,
             ShoppingCartSettings shoppingCartSettings,
             TaxSettings taxSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings, IOrderService orderService)
         {
             _addressSettings = addressSettings;
             _captchaSettings = captchaSettings;
@@ -192,6 +193,7 @@ namespace Nop.Web.Factories
             _shoppingCartSettings = shoppingCartSettings;
             _taxSettings = taxSettings;
             _vendorSettings = vendorSettings;
+            _orderService = orderService;
         }
 
         #endregion
@@ -279,75 +281,75 @@ namespace Nop.Web.Factories
                     case AttributeControlType.Checkboxes:
                     case AttributeControlType.ColorSquares:
                     case AttributeControlType.ImageSquares:
-                    {
-                        if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
                         {
-                            //clear default selection
-                            foreach (var item in attributeModel.Values)
-                                item.IsPreSelected = false;
-
-                            //select new values
-                            var selectedValues =
-                                _checkoutAttributeParser.ParseCheckoutAttributeValues(selectedCheckoutAttributes);
-                            foreach (var attributeValue in await selectedValues.SelectMany(x => x.values).ToListAsync())
+                            if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
+                            {
+                                //clear default selection
                                 foreach (var item in attributeModel.Values)
-                                    if (attributeValue.Id == item.Id)
-                                        item.IsPreSelected = true;
+                                    item.IsPreSelected = false;
+
+                                //select new values
+                                var selectedValues =
+                                    _checkoutAttributeParser.ParseCheckoutAttributeValues(selectedCheckoutAttributes);
+                                foreach (var attributeValue in await selectedValues.SelectMany(x => x.values).ToListAsync())
+                                    foreach (var item in attributeModel.Values)
+                                        if (attributeValue.Id == item.Id)
+                                            item.IsPreSelected = true;
+                            }
                         }
-                    }
 
                         break;
                     case AttributeControlType.ReadonlyCheckboxes:
-                    {
-                        //do nothing
-                        //values are already pre-set
-                    }
+                        {
+                            //do nothing
+                            //values are already pre-set
+                        }
 
                         break;
                     case AttributeControlType.TextBox:
                     case AttributeControlType.MultilineTextbox:
-                    {
-                        if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
                         {
-                            var enteredText =
-                                _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
-                            if (enteredText.Any())
-                                attributeModel.DefaultValue = enteredText[0];
+                            if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
+                            {
+                                var enteredText =
+                                    _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
+                                if (enteredText.Any())
+                                    attributeModel.DefaultValue = enteredText[0];
+                            }
                         }
-                    }
 
                         break;
                     case AttributeControlType.Datepicker:
-                    {
-                        //keep in mind my that the code below works only in the current culture
-                        var selectedDateStr =
-                            _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
-                        if (selectedDateStr.Any())
                         {
-                            if (DateTime.TryParseExact(selectedDateStr[0], "D", CultureInfo.CurrentCulture,
-                                DateTimeStyles.None, out var selectedDate))
+                            //keep in mind my that the code below works only in the current culture
+                            var selectedDateStr =
+                                _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
+                            if (selectedDateStr.Any())
                             {
-                                //successfully parsed
-                                attributeModel.SelectedDay = selectedDate.Day;
-                                attributeModel.SelectedMonth = selectedDate.Month;
-                                attributeModel.SelectedYear = selectedDate.Year;
+                                if (DateTime.TryParseExact(selectedDateStr[0], "D", CultureInfo.CurrentCulture,
+                                    DateTimeStyles.None, out var selectedDate))
+                                {
+                                    //successfully parsed
+                                    attributeModel.SelectedDay = selectedDate.Day;
+                                    attributeModel.SelectedMonth = selectedDate.Month;
+                                    attributeModel.SelectedYear = selectedDate.Year;
+                                }
                             }
                         }
-                    }
 
                         break;
                     case AttributeControlType.FileUpload:
-                    {
-                        if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
                         {
-                            var downloadGuidStr = _checkoutAttributeParser
-                                .ParseValues(selectedCheckoutAttributes, attribute.Id).FirstOrDefault();
-                            _ = Guid.TryParse(downloadGuidStr, out var downloadGuid);
-                            var download = await _downloadService.GetDownloadByGuidAsync(downloadGuid);
-                            if (download != null)
-                                attributeModel.DefaultValue = download.DownloadGuid.ToString();
+                            if (!string.IsNullOrEmpty(selectedCheckoutAttributes))
+                            {
+                                var downloadGuidStr = _checkoutAttributeParser
+                                    .ParseValues(selectedCheckoutAttributes, attribute.Id).FirstOrDefault();
+                                _ = Guid.TryParse(downloadGuidStr, out var downloadGuid);
+                                var download = await _downloadService.GetDownloadByGuidAsync(downloadGuid);
+                                if (download != null)
+                                    attributeModel.DefaultValue = download.DownloadGuid.ToString();
+                            }
                         }
-                    }
 
                         break;
                     default:
@@ -689,6 +691,12 @@ namespace Nop.Web.Factories
                 var pickupPoint = await _genericAttributeService.GetAttributeAsync<PickupPoint>(customer,
                     NopCustomerDefaults.SelectedPickupPointAttribute, store.Id);
                 model.SelectedPickupInStore = _shippingSettings.AllowPickupInStore && pickupPoint != null;
+                var pickupTimeSlotDetails = _orderService.GetPickupTimeSlotDetail(pickupPoint.PickupTimeSlotId ?? 0).Result;
+                if (pickupTimeSlotDetails != null)
+                {
+                    model.PickupTime = pickupTimeSlotDetails.TimeSlot;// Display pickup time in order summry
+                }
+
                 if (!model.SelectedPickupInStore)
                 {
                     if (await _customerService.GetCustomerShippingAddressAsync(customer) is Address address)
@@ -737,7 +745,7 @@ namespace Nop.Web.Factories
 
             return model;
         }
-        
+
         #endregion
 
         #region Methods
