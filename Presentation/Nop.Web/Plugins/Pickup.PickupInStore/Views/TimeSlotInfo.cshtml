@@ -9,7 +9,6 @@
         {
             var pointTimeSlot = Model.First();
             <input name="pickup-points-timeslot-id" id="pickup-points-timeslot-id" type="hidden" value="@($"{pointTimeSlot.Id +"__" + pointTimeSlot.LimitOrderPerTimeSlot}")" />
-            @* <input name="pickup-points-timeslot-limit" id="pickup-points-timeslot-limit" type="hidden" value="@($"{pointTimeSlot.LimitOrderPerTimeSlot}")" />*@
             <ul>
                 <li class="single-pickup-point name">@pointTimeSlot.TimeSlot</li>
             </ul>
@@ -29,8 +28,4 @@
             </select>
         }
     }
-   @* else
-    {
-        <label for="pickup-points-timeslot-select">Not avaialable</label>
-    }*@
 </div>

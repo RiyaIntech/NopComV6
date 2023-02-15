@@ -7,7 +7,6 @@
 
     var storeLocation = webHelper.GetStoreLocation();
 }
-
 @if (!Model.PickupInStoreOnly && Model.PickupPoints.Any())
 {
     <div class="section pickup-in-store">
@@ -21,7 +20,6 @@
         <script asp-location="Footer">
             $(document).ready(function () {
                 $('#pickup-points-form').hide();
-                $('.message-error').hide();
                 togglePickupInStore($("#@Html.IdFor(model => model.PickupInStore)"));
             });
             function togglePickupInStore(pickupInStore) {
@@ -32,22 +30,14 @@
                 else {
                     $('#pickup-points-form').hide();
                 }
-                
+
 
                 $(document).trigger({ type: "checkout_toggle_pickup_in_store", checked: pickupInStore.checked });
             }
             function getPickUpTimeSlots(selectedPickupStoreId) {
                 LoadPickupTimeSlot(selectedPickupStoreId.split('___')[0]);
             }
-            function showError(isLimit) {
-                if (isLimit.checked) {
-                    $('.message-error').show();
-                }
-                else {
-                    $('.message-error').hide();
-                }
-            }
-            function LoadPickupTimeSlot(PickupStoreId) {
+        function LoadPickupTimeSlot(PickupStoreId) {
                 $.ajax({
                     cache: false,
                     url: '@(storeLocation)Admin/PickupInStore/getPickupTimeSlotHtml?storePickupPointId=' + PickupStoreId,
@@ -136,7 +126,7 @@
         {
             <div id="select-pickup-timeslot">
             </div>
-        }
+        }      
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutPickUpPointsAfter, additionalData = Model })
 
 
@@ -184,14 +174,14 @@
                                 {
                                     <text>googleMap.setCenter(marker.getPosition()); </text>
                                 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }());
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }());
                             </text>
                         }
                         else
                         {
                             var address = $"{point.Address} {point.City} {point.ZipPostalCode} {point.CountryName}";
                             <text>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                var interval_@i = setInterval(function () {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        var interval_@i = setInterval(function () {
                                             geocoder.geocode({ 'address': "@address" }, function (results, status) {
                                                 if (status === google.maps.GeocoderStatus.OK) {
                                                     var marker = new google.maps.Marker({
