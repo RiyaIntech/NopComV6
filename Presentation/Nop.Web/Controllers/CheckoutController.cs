@@ -1696,11 +1696,13 @@ namespace Nop.Web.Controllers
                                 var TotalOrders = _orderService.GetTotalOrdersByPickupTimeSlot(Convert.ToInt32((form["pickup-points-timeslot-id"].ToString().Split(new[] { "__" }, StringSplitOptions.None))[0])).Result;
                                 if (TotalOrders.Count >= Convert.ToInt32((form["pickup-points-timeslot-id"].ToString().Split(new[] { "__" }, StringSplitOptions.None))[1]))
                                 {
-                                    ModelState.AddModelError("", "Maximum Order Placed on selected time slot! Please choose another one!");
-                                    var shippingAddressModel = await _checkoutModelFactory.PrepareShippingAddressModelAsync(cart, prePopulateNewAddressWithCustomerFields: true);
-                                    //shippingAddressModel.PickupPointsModel.Warnings.Add("Maximum Order Placed on selected time slot! Please choose another one!");
-                                    shippingAddressModel.PickupPointsModel.IsLimitTimeSlotExceeded = true;
-                                    return PartialView("_PickupPoints", shippingAddressModel.PickupPointsModel);
+                                    //ModelState.AddModelError("", "Maximum Order Placed on selected time slot! Please choose another one!");
+                                    //var shippingAddressModel = await _checkoutModelFactory.PrepareShippingAddressModelAsync(cart, prePopulateNewAddressWithCustomerFields: true);
+                                    ////shippingAddressModel.PickupPointsModel.Warnings.Add("Maximum Order Placed on selected time slot! Please choose another one!");
+                                    //shippingAddressModel.PickupPointsModel.IsLimitTimeSlotExceeded = true;
+                                    throw new Exception("You have reached maximum limit of orders on selected time slot! Please choose another one!");
+                                    //return PartialView("_PickupPoints", shippingAddressModel.PickupPointsModel);
+
                                 }
                             }
                         }
